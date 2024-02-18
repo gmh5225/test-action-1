@@ -1,0 +1,45 @@
+name: build
+
+permissions:
+  contents: write
+  
+on: [push, pull_request]
+
+jobs:
+  build:
+    # Skip building pull requests from the same repository
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+    env:
+      BUILD_TYPE: Release
+    steps:
+    
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+          path: test-action-1
+          submodules: 'recursive'
+          
+    - name: Package test
+      run: 
+          7z a -v1500m test.zip test-action-1
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows-test
+        path: test-action-1
+    
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: ${{ startsWith(github.ref, 'refs/tags/') }}
+      with:
+        prerelease: ${{ !startsWith(github.ref, 'refs/tags/v') || contains(github.ref, '-pre') }}
+        files: windows-test.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
