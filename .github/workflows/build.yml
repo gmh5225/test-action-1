@@ -26,7 +26,7 @@ jobs:
           
     - name: Package test
       run: |
-          7z a -v1500m test.zip test-action-1
+          7z a -v1500m windows-test.zip test-action-1
     
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
