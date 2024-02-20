@@ -32,7 +32,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: windows-test
-        path: test-action-1
+        path: test-action-1/1.zip.00*
     
     - name: Release
       uses: softprops/action-gh-release@v1
